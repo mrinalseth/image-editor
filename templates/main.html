@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Image Kernel Convolver</title>
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" /> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(234, 241, 249, 0.564);
+        }
+        #header {
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            color: white;
+            padding: 20px;
+        }
+        #content {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 100px;
+        }
+        #contrast-button {
+            border: 1px solid black;
+            width: fit-content;
+            padding: 10px;
+            text-decoration: none;
+            color: white;
+            background-color: black;
+            padding-left: 20px;
+            padding-right: 20px;
+            letter-spacing: 1.5px;
+        }
+        img {
+            width: 350px;
+            height: 200px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 250px;
+        }
+        form > select {
+            padding: 5px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body style="height: 100vh;">
+    <section id="header" class="hero is-info is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    Visualize Image Convolutions
+                </h1>
+            </div>
+           
+        </div>
+    </section>
+    <section  class="section">
+        <div id="content" class="container">
+            <div id="img-div" class="column is-one-third">
+                <figure class="image is-1by2">
+                    <img style="filter: grayscale(100%);" alt="Original Picture" src="/static/iu.jpg" />
+                </figure>
+            </div>
+            <div class="column is-one-third">
+                <form method="POST" action="{{ url_for('apply_convolution') }}">
+                    <label for="convolutions">Choose a kernel:</label>
+                    <select id="convolutions"name = "convolution_type">
+                        <option value="Identity">Identity</option>
+                        <option value="Sharpen">Sharpen</option>
+                        <option value="EdgeDetection">Edge Detection</option>
+                        <option value="BoxBlur">Box Blur</option>
+                        <option value="Emboss">Emboss</option>
+                        <option value="GaussianBlur">Gaussian Blur</option>
+                        <option value="LeftSobel">Left Sobel</option>
+                        <option value="RightSobel">Right Sobel</option>
+                        <option value="TopSobel">Top Sobel</option>
+                        <option value="BottomSobel">Bottom Sobel</option>
+                    </select>
+                    <input id="btn" type="submit">
+                </form>
+            </div>
+            <div class="column is-one-third">
+                <figure class="image is-1by2">
+                    <img alt="Output Image" src="/static/image_space.png" />
+                </figure>
+            </div>
+        </div>
+    </section>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a id="contrast-button" href="http://localhost:5000/contrast">Contrast</a>
+    </div>
+</body>
+
+</html>
