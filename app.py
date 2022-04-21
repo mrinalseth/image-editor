@@ -4,9 +4,39 @@ import string
 from flask import Flask, render_template, request, redirect, url_for, flash
 import numpy as np
 import cv2
+import numpy as np
 import os
 from PIL import Image
 from skimage.exposure import rescale_intensity
+
+
+
+def hist_plot(img):
+      
+    # empty list to store the count 
+    # of each intensity value
+    count =[]
+      
+    # empty list to store intensity 
+    # value
+    r = []
+      
+    # loop to traverse each intensity 
+    # value
+    for k in range(0, 256):
+        r.append(k)
+        count1 = 0
+          
+        # loops to traverse each pixel in 
+        # the image 
+        for i in range(m):
+            for j in range(n):
+                if img[i, j]== k:
+                    count1+= 1
+        count.append(count1)
+          
+    return (r, count)
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -58,11 +88,6 @@ def contrast():
 
     # Read original image in greyscale
     originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
-
-    # getting the name from the POST request
-    # name = request.form['convolution_type']
-    # kernel = pick_convolution_type(name)
-    # newImage = convolve(originalImage, kernel)
     newImage = originalImage
     mmin = np.array(originalImage).min()
     mmax = np.array(originalImage).max()
@@ -77,6 +102,27 @@ def contrast():
     cv2.imwrite('static/newImage.jpg',newImage)
     return redirect(url_for('add_newImg', name="contrast"))
 
+
+@app.route('/gamma', methods=["POST"])
+def gamma():
+    # Remove the new image from directory on submit
+    if os.path.exists('static/newImage.jpg'):
+        os.remove('static/newImage.jpg')
+
+    # Read original image in greyscale
+    originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
+    gamma_value = float(request.form['gamma_value'])
+    print(gamma_value)
+
+    invGamma = float(1/gamma_value)
+    table = [((i / 255) ** invGamma) * 255 for i in range(256)]
+    table = np.array(table, np.uint8)
+    newImage = cv2.LUT(originalImage, table)
+    # r, count = hist_plot(newImage)
+
+
+    cv2.imwrite('static/newImage.jpg',newImage)
+    return redirect(url_for('add_newImg', name="erosion"))
 
 
 # KERNELS
