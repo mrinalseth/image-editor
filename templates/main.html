@@ -30,8 +30,7 @@
             align-items: center;
             margin-top: 100px;
         }
-        #contrast-button {
-            border: 1px solid black;
+        .contrast-button {
             width: fit-content;
             padding: 10px;
             text-decoration: none;
@@ -40,6 +39,10 @@
             padding-left: 20px;
             padding-right: 20px;
             letter-spacing: 1.5px;
+        }
+        .contrast-button:hover{
+            color: black;
+            background-color: white;
         }
         img {
             width: 350px;
@@ -56,6 +59,20 @@
             margin-bottom: 10px;
             margin-top: 10px;
         }
+
+        #gamma {
+            margin-top: 250px;
+            position: absolute;
+            display: inline;
+            bottom: 100px;
+        }
+        #gamma > #gamma-btn {
+            padding: 10px;
+            background-color: black;
+            color: white;
+            border: 1px solid black;
+
+        }
     </style>
 </head>
 
@@ -70,6 +87,13 @@
            
         </div>
     </section>
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <a class="contrast-button" href="http://localhost:5000/contrast">Contrast</a>
+        <a class="contrast-button" href="http://localhost:5000/erosion">Erosion</a>
+        <a class="contrast-button" href="http://localhost:5000/dilation">Dilation</a>
+        <a class="contrast-button" href="http://localhost:5000/opening">opening</a>
+        <a class="contrast-button" href="http://localhost:5000/closing">closing</a>
+    </div>
     <section  class="section">
         <div id="content" class="container">
             <div id="img-div" class="column is-one-third">
@@ -80,7 +104,7 @@
             <div class="column is-one-third">
                 <form method="POST" action="{{ url_for('apply_convolution') }}">
                     <label for="convolutions">Choose a kernel:</label>
-                    <select id="convolutions"name = "convolution_type">
+                    <select id="convolutions"name = "convolution_type" style="background-color: black; color: white; padding: 10px;">
                         <option value="Identity">Identity</option>
                         <option value="Sharpen">Sharpen</option>
                         <option value="EdgeDetection">Edge Detection</option>
@@ -92,11 +116,11 @@
                         <option value="TopSobel">Top Sobel</option>
                         <option value="BottomSobel">Bottom Sobel</option>
                     </select>
-                    <input id="btn" type="submit">
+                    <input id="btn" type="submit" style="background-color: black; color: white; padding: 10px;">
                 </form>
-                <form method="POST" action="{{ url_for('gamma') }}">
-                    <input type="text" name="gamma_value" value="1">
-                    <input type="submit">
+                <form id="gamma" method="POST" action="{{ url_for('gamma') }}">
+                    <input style="padding-top: 10px; padding-bottom: 10px;" type="text" name="gamma_value" value="1">
+                    <input id="gamma-btn" type="submit" value="gamma">
                 </form>
             </div>
             <div class="column is-one-third">
@@ -106,9 +130,6 @@
             </div>
         </div>
     </section>
-    <div style="display: flex; justify-content: center; align-items: center;">
-        <a id="contrast-button" href="http://localhost:5000/contrast">Contrast</a>
-    </div>
 </body>
 
 </html>

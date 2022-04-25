@@ -11,36 +11,8 @@ from skimage.exposure import rescale_intensity
 
 
 
-def hist_plot(img):
-      
-    # empty list to store the count 
-    # of each intensity value
-    count =[]
-      
-    # empty list to store intensity 
-    # value
-    r = []
-      
-    # loop to traverse each intensity 
-    # value
-    for k in range(0, 256):
-        r.append(k)
-        count1 = 0
-          
-        # loops to traverse each pixel in 
-        # the image 
-        for i in range(m):
-            for j in range(n):
-                if img[i, j]== k:
-                    count1+= 1
-        count.append(count1)
-          
-    return (r, count)
-
-
 app = Flask(__name__)
 app.config['DEBUG'] = True
-# prevent cached responses
 if app.config["DEBUG"]:
     @app.after_request
     def after_request(response):
@@ -51,7 +23,6 @@ if app.config["DEBUG"]:
 
 @app.route('/')
 def index_get():
-    # Remove the new image on refresh on main page
     if os.path.exists('static/newImage.jpg'):
         os.remove('static/newImage.jpg')
     return render_template('main.html')
@@ -60,16 +31,15 @@ def index_get():
 def add_newImg(name):
     return render_template('output.html', type=name)
 
+
+# Kernel based
 @app.route('/convolutions', methods=["POST"])
 def apply_convolution():
-    # Remove the new image from directory on submit
     if os.path.exists('static/newImage.jpg'):
         os.remove('static/newImage.jpg')
 
-    # Read original image in greyscale
     originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
 
-    # getting the name from the POST request
     name = request.form['convolution_type']
     kernel = pick_convolution_type(name)
     newImage = convolve(originalImage, kernel)
@@ -82,11 +52,9 @@ def apply_convolution():
 
 @app.route('/contrast')
 def contrast():
-    # Remove the new image from directory on submit
     if os.path.exists('static/newImage.jpg'):
         os.remove('static/newImage.jpg')
 
-    # Read original image in greyscale
     originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
     newImage = originalImage
     mmin = np.array(originalImage).min()
@@ -105,11 +73,9 @@ def contrast():
 
 @app.route('/gamma', methods=["POST"])
 def gamma():
-    # Remove the new image from directory on submit
     if os.path.exists('static/newImage.jpg'):
         os.remove('static/newImage.jpg')
 
-    # Read original image in greyscale
     originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
     gamma_value = float(request.form['gamma_value'])
     print(gamma_value)
@@ -118,11 +84,65 @@ def gamma():
     table = [((i / 255) ** invGamma) * 255 for i in range(256)]
     table = np.array(table, np.uint8)
     newImage = cv2.LUT(originalImage, table)
-    # r, count = hist_plot(newImage)
 
 
     cv2.imwrite('static/newImage.jpg',newImage)
-    return redirect(url_for('add_newImg', name="erosion"))
+    return redirect(url_for('add_newImg', name="Gamma Correction"))
+
+
+@app.route('/erosion')
+def erosion():
+    if os.path.exists('static/newImage.jpg'):
+        os.remove('static/newImage.jpg')
+
+    originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
+    kernel = np.ones((5,5),np.uint8)
+    newImage = cv2.erode(originalImage,kernel,iterations = 1)
+
+
+    cv2.imwrite('static/newImage.jpg',newImage)
+    return redirect(url_for('add_newImg', name="Erosion"))
+
+
+@app.route('/dilation')
+def dilation():
+    if os.path.exists('static/newImage.jpg'):
+        os.remove('static/newImage.jpg')
+
+    originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
+    kernel = np.ones((5,5),np.uint8)
+    newImage = cv2.dilate(originalImage,kernel,iterations = 1)
+
+
+    cv2.imwrite('static/newImage.jpg',newImage)
+    return redirect(url_for('add_newImg', name="Dilation"))
+
+@app.route('/opening')
+def opening():
+    if os.path.exists('static/newImage.jpg'):
+        os.remove('static/newImage.jpg')
+
+    originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
+    kernel = np.ones((5,5),np.uint8)
+    newImage = cv2.morphologyEx(originalImage,cv2.MORPH_OPEN, kernel)
+
+
+    cv2.imwrite('static/newImage.jpg',newImage)
+    return redirect(url_for('add_newImg', name="Opening"))
+
+
+@app.route('/closing')
+def closing():
+    if os.path.exists('static/newImage.jpg'):
+        os.remove('static/newImage.jpg')
+
+    originalImage = cv2.imread('static/iu.jpg',cv2.IMREAD_GRAYSCALE)
+    kernel = np.ones((5,5),np.uint8)
+    newImage = cv2.morphologyEx(originalImage,cv2.MORPH_CLOSE, kernel)
+
+
+    cv2.imwrite('static/newImage.jpg',newImage)
+    return redirect(url_for('add_newImg', name="Closing"))
 
 
 # KERNELS
@@ -169,7 +189,6 @@ kernelDict = {
     "BottomSobel": BottomSobel,
     "Emboss": Emboss,
 }
-# Function to access kernel dictionary for corresponding kernel
 def pick_convolution_type(name):
     return kernelDict[name]()
 
